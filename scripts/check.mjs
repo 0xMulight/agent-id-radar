@@ -1,9 +1,12 @@
-import { readdirSync, readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { config } from '../src/config.mjs';
+import { profile } from '../personal/profile.mjs';
 const root = resolve(import.meta.dirname, '..');
-function walk(dir) { return readdirSync(dir, { withFileTypes: true }).flatMap(x => x.isDirectory() ? walk(join(dir, x.name)) : [join(dir, x.name)]); }
-for (const f of [...walk(join(root, 'src')), ...walk(join(root, 'test'))].filter(x => x.endsWith('.mjs'))) execFileSync(process.execPath, ['--check', f], { stdio: 'inherit' });
-config(JSON.parse(readFileSync(join(root, 'config.example.json'), 'utf8')));
-console.log('Syntax and example configuration checks passed');
+const walk = p => readdirSync(p, { withFileTypes: true }).flatMap(e => e.isDirectory() ? walk(join(p, e.name)) : [join(p, e.name)]);
+const files = ['watch.mjs', 'login.mjs', 'setup.mjs'].map(p => join(root, p)).concat(...['personal', 'scripts', 'test', 'vendor'].map(p => walk(join(root, p)))).filter(p => p.endsWith('.mjs'));
+for (const file of files) execFileSync(process.execPath, ['--check', file], { stdio: 'inherit' });
+const example = JSON.parse(readFileSync(join(root, 'config.example.json'), 'utf8'));
+profile({ ...example, wallets: [{ name: 'example.ai', address: '0x' + '1'.repeat(40) }] });
+execFileSync(process.execPath, [join(root, 'scripts/build.mjs'), '--check'], { stdio: 'inherit' });
+console.log('Syntax, profile and upstream patch checks passed. No wallet or network calls were run.');

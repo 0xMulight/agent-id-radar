@@ -1,19 +1,25 @@
 {
   "repository": "https://github.com/nancyc0813-maker/agentid-sniper",
-  "commit": "d104eef587f7b0fdc5c3875e92f0b6a0668aca70",
-  "sourceVersion": "2.6.5",
+  "sourceVersion": "2.8.2",
+  "commit": "ef741211780bacec8ccbbc25b3f7449cc84bc3e2",
+  "watchSha256": "34293ab59758484ff6a48b85f07864073a525b75cc2014cdb0411a3b2ed74bf7",
   "license": "MIT",
-  "derivedComponents": [
-    "BSC Agent ID registry discovery",
-    "Keccak-256 helper",
-    "known mint selectors and BSC routing constants"
-  ],
-  "note": "Legacy watch.mjs, installer, update and execution paths are not included or runnable. Guarded engine is independently maintained.",
-  "reviewedUpdate": {
-    "sourceVersion": "2.7.6",
-    "commit": "8f9c488f064e8cdbc9e46df4905bfb25a6a7af00",
-    "reviewDate": "2026-11-01",
-    "adoptedIdeas": ["recent and hot entry scheduling", "verified Agent-ID sender heat", "observation-only additional DEX pool discovery"],
-    "report": "docs/upstream-review-2.7.6.md"
+  "integration": "Complete upstream engine, with a reproducible explicit patch list in personal/patches.json.",
+  "archiveBranch": "archive/guarded-beta2",
+  "officialCliReference": "https://github.com/binance/binance-skills-hub/tree/main/skills/binance-web3/binance-agentic-wallet/references",
+  "upstreamFiles": {
+    ".gitignore": "87ad90cf3a5be3a4b02729653a9ba9bc50fa1ef7",
+    "LICENSE": "829ef058d8695f625fb39330abf8c6ae9ee298ea",
+    "README.md": "2b488dbd6392ec9d94126882ae0370d551ad6509",
+    "config.example.json": "ba28d2516292afefd8b5c210303eac9c8347fe03",
+    "login.mjs": "a7d0917c615e975f3646dc40aa9a41c8482a53b4",
+    "setup.mjs": "ac264e4cd3dad63a9092035b057f83e850cf51e2",
+    "setup_wallet2.bat": "d9493a5cafba47f8c25edf164e9f7846c915005d",
+    "start_hidden.vbs": "f63faa8bfb5203e5d9cab965a9f9a74a9cc91784",
+    "start_loop.bat": "17a282620333d4636b65ccc8d5a261b79f2fdb4c",
+    "tg_login.bat": "796d5720c75b71fb2ef49cf9ebe20a56f12a35d6",
+    "version.json": "b51ae5dc31fa038fcee045b0eb52c919831c8366",
+    "watch.mjs": "69cfd120721af0143c3ca109b602aecd7942e659",
+    "\u4e00\u952e\u5b89\u88c5.bat": "62a2aa7d39c53235253d0dd0664913b219b23a3c"
   }
 }

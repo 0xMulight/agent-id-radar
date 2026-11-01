@@ -1,0 +1,98 @@
+[
+  {
+    "name": "personal imports",
+    "before": "import { fileURLToPath } from 'node:url';",
+    "after": "import { fileURLToPath } from 'node:url';\nimport { WalletGateway } from './personal/wallet.mjs';\nimport { ownerMessage } from './personal/profile.mjs';",
+    "count": 1
+  },
+  {
+    "name": "separate observation state",
+    "before": "STATE = join(DIR, 'data', 'watch_state.json')",
+    "after": "STATE = join(DIR, 'data', process.argv.includes('--execute') ? 'watch_state.json' : 'watch_observe_state.json')",
+    "count": 1
+  },
+  {
+    "name": "wallet runtime",
+    "before": "const CONFIG = JSON.parse(readFileSync(join(DIR, 'config.json'), 'utf8'));",
+    "after": "const CONFIG = JSON.parse(readFileSync(join(DIR, 'config.json'), 'utf8'));\nconst PERSONAL = new WalletGateway(CONFIG, DIR, { argv: process.argv.slice(2), rpc, bnbUsd });\nprocess.once('exit', () => PERSONAL.close());",
+    "count": 1
+  },
+  {
+    "name": "single wallet gateway",
+    "before": "function makeBaw(wc) {\n  if (!wc.bawDir) return (args, timeout = 180000) => new Promise((res) => execFile('baw', [...args, '--json'], { shell: true, windowsHide: true, timeout, maxBuffer: 4 << 20 }, parseOut(res)));\n  const env = { ...process.env, BINANCE_BAW_DIR: join(DIR, wc.bawDir), BINANCE_INSTANCE_ID: wc.instanceId || wc.name };\n  const bin = join(DIR, wc.bawPkg || 'baw2pkg', 'node_modules', '@binance', 'agentic-wallet', 'dist', 'index.js');\n  return (args, timeout = 180000) => new Promise((res) => execFile(process.execPath, [bin, ...args, '--json'], { env, windowsHide: true, timeout, maxBuffer: 4 << 20 }, parseOut(res)));\n}\n",
+    "after": "function makeBaw(wc) { return PERSONAL.runner(wc); }\n",
+    "count": 1
+  },
+  {
+    "name": "personal project limit",
+    "before": "maxUsd: Math.min(Number(CONFIG.paid?.maxUsd) || 20, 20)",
+    "after": "maxUsd: Math.min(Number(CONFIG.paid?.maxUsd) || Number(PERSONAL.cfg.perProjectUsd), Number(PERSONAL.cfg.perProjectUsd))",
+    "count": 1
+  },
+  {
+    "name": "full payment and fee headroom",
+    "before": "const budU = forced ? PAID.maxUsd : Math.min(P.isNftBuy ? 10 : PAID.maxUsd, PAID.dayUsd - paidDayUsd(W), P.maxOurBnb > 0 && price > 0 ? P.maxOurBnb * price : 1e9)",
+    "after": "const budU = Math.min(PERSONAL.buyBudgetUsd(W.addr, c, price, P.isNftBuy === 1), forced ? PAID.maxUsd : Math.min(P.isNftBuy ? Number(PERSONAL.cfg.nftMaxUsd) : PAID.maxUsd, PAID.dayUsd - paidDayUsd(W), P.maxOurBnb > 0 && price > 0 ? P.maxOurBnb * price : 1e9))",
+    "count": 1
+  },
+  {
+    "name": "surcharge counts in daily usage",
+    "before": "addPaidUsd(W, Math.min(vb, P._baseVb || vb) * price); /* 使用者 11/1 17:54：跟單加價的部分不算進每日總上限 */",
+    "after": "addPaidUsd(W, vb * price); /* 个人版：完整加价付款计入额度，Gas 另由共享日记核对 */",
+    "count": 1
+  },
+  {
+    "name": "surcharge cannot evade remaining budget",
+    "before": "if ((Number(vU) / 1e18) * price > PAID.maxUsd ||",
+    "after": "if ((Number(vU) / 1e18) * price > budU ||",
+    "count": 1
+  },
+  {
+    "name": "no base-price exemption",
+    "before": "let good = await ok(rdata, v); P._baseVb = vb; /* 加價前的金額：只有這部分算進每日總上限 */",
+    "after": "let good = await ok(rdata, v); /* 个人版：没有加价豁免 */",
+    "count": 1
+  },
+  {
+    "name": "upstream cannot overwrite personal changes",
+    "before": "const UPD = { on: true, ver: '2.8.2', repo: 'nancyc0813-maker/agentid-sniper', group: 't.me/nancy_c0813' };",
+    "after": "const UPD = { on: false, ver: '2.8.2', repo: 'nancyc0813-maker/agentid-sniper', group: 't.me/nancy_c0813' };",
+    "count": 1
+  },
+  {
+    "name": "TG control owner identity",
+    "before": "if (!m || String(m.chat?.id) !== String(TG.b) || !m.text) continue;",
+    "after": "if (!m || !ownerMessage(m, CONFIG.telegram) || !m.text) continue;",
+    "count": 1
+  },
+  {
+    "name": "include recorded entry fees in costs",
+    "before": "const t = { ...t0, cost: (t0.only || t0.both || W.addr === ME) ? t0.cost : 0 };",
+    "after": "const t = { ...t0, cost: (t0.only || t0.both || W.addr === ME) ? t0.cost : 0 };\n    if (t.cost > 0) t.cost = Math.max(t.cost, PERSONAL.assetCostUsd(W.addr, t.addr));",
+    "count": 2
+  },
+  {
+    "name": "terminal order income replaces wallet delta",
+    "before": "  const got = Number(bnb1 - bnb0) / 1e18, px = await bnbUsd().catch(() => 0), gotU = got * px; // 賣出實際換回多少（使用者想知道每筆拿回多少錢）",
+    "after": "  const got = Math.max(0, Number(r.j.data.actualReceived) - Number(r.j.data.personalGasBnb || 0)), px = await bnbUsd().catch(() => 0), gotU = got * px;\n  st.realizedUsdNet = (st.realizedUsdNet || 0) + gotU; save();",
+    "count": 1
+  },
+  {
+    "name": "recover only outstanding verified cost",
+    "before": "const pct = Math.min(100, Math.ceil((t.cost / v) * 100 * 1.03));",
+    "after": "const remaining = Math.max(0, t.cost - (st.realizedUsdNet || 0));\n      const pct = Math.max(1, Math.min(100, Math.ceil(((remaining + Number(PERSONAL.cfg.maxGasBnb) * (await bnbUsd())) / v) * 100 * 1.03)));",
+    "count": 1
+  },
+  {
+    "name": "unlock core after verified net recovery",
+    "before": "st.done2.push('back'); if (pct < 100) st.moonPend = 1;",
+    "after": "if ((st.realizedUsdNet || 0) >= t.cost) { st.done2.push('back'); if (pct < 100) st.moonPend = 1; }",
+    "count": 1
+  },
+  {
+    "name": "refund status is advisory",
+    "before": "      if (!forced && paying && await isNft(c).catch(() => false)) { /* 使用者 11/1 18:36：NFT 要很嚴格 */ let why = ''; if (!(progress >= Math.max(GO_PCT, 0.7))) why = `NFT 進度要 70% 以上（現在 ${Math.round((progress || 0) * 100)}%）`; else if (!((P.agents || 0) >= Math.max(AG_MIN, 150))) why = `NFT 要 150 個以上 Agent ID 錢包在打（現在 ${P.agents || 0} 個）`; else if (!(await walletLimit(c, true))) why = 'NFT 一定要有「每個錢包上限」（只有每筆上限不算）'; else why = await nftStrict(c); if (why) { if (P.nftWhy !== why) { P.nftWhy = why; P.lastReason = why; log(`跳過 ${P.name || c}：${why}`); } continue; } P.isNftBuy = 1; }",
+    "after": "      if (paying && !P.personalRefundNote) { P.personalRefundNote = 1; log('退款条件未核实，按非保本项目参与（不因此拦截）：' + c); }\n      if (!forced && paying && await isNft(c).catch(() => false)) { /* 使用者 11/1 18:36：NFT 要很嚴格 */ let why = ''; if (!(progress >= Math.max(GO_PCT, 0.7))) why = `NFT 進度要 70% 以上（現在 ${Math.round((progress || 0) * 100)}%）`; else if (!((P.agents || 0) >= Math.max(AG_MIN, 150))) why = `NFT 要 150 個以上 Agent ID 錢包在打（現在 ${P.agents || 0} 個）`; else if (!(await walletLimit(c, true))) why = 'NFT 一定要有「每個錢包上限」（只有每筆上限不算）'; else why = await nftStrict(c); if (why) { if (P.nftWhy !== why) { P.nftWhy = why; P.lastReason = why; log(`跳過 ${P.name || c}：${why}`); } continue; } P.isNftBuy = 1; }",
+    "count": 1
+  }
+]

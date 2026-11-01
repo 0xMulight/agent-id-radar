@@ -1,4 +1,4 @@
-name: Offline checks
+name: Full upstream integration checks
 on: [push, pull_request]
 permissions:
   contents: read
@@ -12,4 +12,3 @@ jobs:
           node-version: '22'
       - run: npm run check
       - run: npm test
-      - run: npm run demo

@@ -1,0 +1,5 @@
+# Preserve pinned upstream formatting so its source hash remains auditable.
+vendor/agentid-sniper/watch.mjs -whitespace
+watch.mjs whitespace=-blank-at-eol
+*.bat whitespace=cr-at-eol
+*.vbs whitespace=cr-at-eol

@@ -1,4 +1,5 @@
 node_modules/
+tools/
 data/
 config.json
 config.*.local.json
@@ -8,9 +9,12 @@ config.*.local.json
 *.log
 *.zip
 *.tgz
-coverage/
-.baw/
+baw*/
 wallet*/
+.baw/
 auth.json
 credentials*
-!config.example.json
+data_wallets.txt
+WATCH_STOP
+UPDATE
+coverage/

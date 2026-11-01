@@ -1,83 +1,55 @@
 {
-  "schemaVersion": 1,
-  "mode": "shadow",
-  "chainId": 56,
-  "rpcs": [],
-  "wallets": [],
-  "templates": [],
-  "limits": {
-    "perProjectUsd": "12",
-    "globalDailyBnb": "0.05",
-    "walletDailyBnb": "0.05",
-    "gasReserveBnb": "0.006",
-    "freeGasDailyBnb": "0.005",
-    "globalGasDailyBnb": "0.01",
-    "maxGasPerTransactionBnb": "0.001",
-    "maxFreeTransactions": 1000,
-    "maxPaidInWindow": 3,
-    "paidWindowSeconds": 180,
-    "maxFailures": 3
+  "wallets": [
+    {
+      "name": "mywallet.ai",
+      "address": "0xYourAgentWallet"
+    }
+  ],
+  "telegram": {
+    "botToken": "",
+    "chatId": "",
+    "groupChatId": "",
+    "controlUserId": ""
   },
-  "entry": {
-    "progressBps": 6000,
-    "minAgents": 100,
-    "freeBurstMin": 25,
-    "burstSeconds": 180,
-    "minimumPaidHeat": 1
+  "timeZone": "Asia/Shanghai",
+  "paid": {
+    "maxUsd": 12,
+    "keepBnb": 0.006
   },
-  "sales": {
+  "rules": {
     "backX": 2,
-    "earlyDropBps": 2500,
-    "earlyCoverBps": 10200,
-    "paidCrashBps": 4000,
-    "fastPaidCrashBps": 3500,
-    "fastSeconds": 1800,
-    "freeCrashBps": 5000,
-    "freeCoreBps": 3000,
-    "paidCoreBps": 5000,
     "steps": [
       [
         10,
-        3000
+        30
       ],
       [
         20,
-        5000
+        50
       ]
     ],
-    "slippageBps": 300,
-    "maxPriceImpactBps": 1000,
-    "maxRepriceBps": 500,
-    "maxPeakJumpBps": 10000,
-    "quoteMaxAgeSeconds": 15,
-    "confirmMaxGapSeconds": 30,
-    "dustUsd": "0.3"
+    "crash": 0.4,
+    "crashAfterBack": 0.6,
+    "moonPct": 20,
+    "moonNotifyX": [
+      50,
+      100
+    ]
   },
-  "scan": {
-    "pollMs": 3000,
-    "hotMs": 15000,
-    "normalMs": 60000,
-    "coldMs": 300000,
-    "activeHours": 24,
-    "maxEntryChecksPerTick": 8,
-    "entryConcurrency": 2,
-    "confirmations": 2,
-    "maxBlocksPerTick": 8,
-    "receiptConcurrency": 4,
-    "rpcTimeoutMs": 8000,
-    "maxCandidates": 1000
-  },
-  "market": {
-    "enabled": false,
-    "cacheSeconds": 60,
-    "timeoutMs": 5000,
-    "maxRequestsPerMinute": 30
-  },
-  "telegram": {
-    "chatId": "",
-    "tokenEnv": "RADAR_TG_BOT_TOKEN"
-  },
-  "blockedContracts": [],
-  "blockedDeployers": [],
-  "temporaryDailyLimit": null
+  "tokens": [],
+  "watchVault": "",
+  "forceMint": [],
+  "rpcs": [],
+  "personal": {
+    "mode": "observe",
+    "globalDailyBnb": "0.05",
+    "globalGasDailyBnb": "0.01",
+    "perProjectUsd": "12",
+    "nftMaxUsd": "5",
+    "maxGasBnb": "0.001",
+    "keepBnb": "0.006",
+    "maxSlippage": "3",
+    "receiptWaitSeconds": 45,
+    "confirmations": 2
+  }
 }
