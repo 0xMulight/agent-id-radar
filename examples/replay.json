@@ -1,0 +1,36 @@
+{
+  "scenarios": [
+    {
+      "name": "免费币先回撤、次日上涨",
+      "qty": "1000", "costUsd": "0.1", "free": true, "feeUsd": "0.02", "assumedSlippageBps": 100,
+      "quotes": [
+        { "seconds": 0, "priceUsd": "0.03" },
+        { "seconds": 5, "priceUsd": "0.06" },
+        { "seconds": 10, "priceUsd": "0.029" },
+        { "seconds": 15, "priceUsd": "0.029" },
+        { "seconds": 86410, "priceUsd": "0.30" }
+      ]
+    },
+    {
+      "name": "付费币回本、交易仓退出、底仓次日上涨",
+      "qty": "1000", "costUsd": "12", "free": false, "feeUsd": "0.02", "assumedSlippageBps": 100,
+      "quotes": [
+        { "seconds": 0, "priceUsd": "0.012" },
+        { "seconds": 5, "priceUsd": "0.024" },
+        { "seconds": 10, "priceUsd": "0.014" },
+        { "seconds": 15, "priceUsd": "0.014" },
+        { "seconds": 86410, "priceUsd": "0.24" }
+      ]
+    },
+    {
+      "name": "付费币没有回本、持续下跌",
+      "qty": "1000", "costUsd": "12", "free": false, "feeUsd": "0.02", "assumedSlippageBps": 100,
+      "quotes": [
+        { "seconds": 0, "priceUsd": "0.012" },
+        { "seconds": 5, "priceUsd": "0.007" },
+        { "seconds": 10, "priceUsd": "0.006" },
+        { "seconds": 86410, "priceUsd": "0.001" }
+      ]
+    }
+  ]
+}

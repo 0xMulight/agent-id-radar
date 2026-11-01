@@ -1,0 +1,12 @@
+{
+  "repository": "https://github.com/nancyc0813-maker/agentid-sniper",
+  "commit": "d104eef587f7b0fdc5c3875e92f0b6a0668aca70",
+  "sourceVersion": "2.6.5",
+  "license": "MIT",
+  "derivedComponents": [
+    "BSC Agent ID registry discovery",
+    "Keccak-256 helper",
+    "known mint selectors and BSC routing constants"
+  ],
+  "note": "Legacy watch.mjs, installer, update and execution paths are not included or runnable. Guarded engine is independently maintained."
+}

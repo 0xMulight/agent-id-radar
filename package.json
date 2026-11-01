@@ -1,0 +1,18 @@
+{
+  "name": "agent-id-radar",
+  "version": "0.1.0-beta.1",
+  "private": true,
+  "description": "Mulight Agent ID monitor, guarded execution and independent core-position management",
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "check": "node scripts/check.mjs",
+    "demo": "node src/cli.mjs demo",
+    "init": "node src/cli.mjs init",
+    "watch": "node src/cli.mjs watch",
+    "status": "node src/cli.mjs status",
+    "replay": "node src/cli.mjs replay examples/replay.json"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,16 @@
+node_modules/
+data/
+config.json
+config.*.local.json
+.env
+.env.*
+!.env.example
+*.log
+*.zip
+*.tgz
+coverage/
+.baw/
+wallet*/
+auth.json
+credentials*
+!config.example.json
