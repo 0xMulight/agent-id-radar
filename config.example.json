@@ -57,11 +57,21 @@
     "pollMs": 3000,
     "hotMs": 15000,
     "normalMs": 60000,
+    "coldMs": 300000,
+    "activeHours": 24,
+    "maxEntryChecksPerTick": 8,
+    "entryConcurrency": 2,
     "confirmations": 2,
     "maxBlocksPerTick": 8,
     "receiptConcurrency": 4,
     "rpcTimeoutMs": 8000,
     "maxCandidates": 1000
+  },
+  "market": {
+    "enabled": false,
+    "cacheSeconds": 60,
+    "timeoutMs": 5000,
+    "maxRequestsPerMinute": 30
   },
   "telegram": {
     "chatId": "",

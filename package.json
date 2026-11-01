@@ -1,6 +1,6 @@
 {
   "name": "agent-id-radar",
-  "version": "0.1.0-beta.1",
+  "version": "0.1.0-beta.2",
   "private": true,
   "description": "Mulight Agent ID monitor, guarded execution and independent core-position management",
   "type": "module",

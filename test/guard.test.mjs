@@ -18,6 +18,11 @@ test('60% progress never bypasses known malicious or code changes', () => {
 test('paid NFT never auto-enters even with high progress and heat', () => {
   assert.throws(() => entryGate(snapshot({ assetType: 'ERC721', progressBps: 10000, agentCount: 10000 }), cfg(), NOW), /PAID_NFT/);
 });
+test('high progress cannot replace the verified Agent sender requirement for paid entries', () => {
+  assert.throws(() => entryGate(snapshot({ progressBps: 9900, agentCount: 99, heatTier: 100 }), cfg(), NOW), /PAID_AGENT_COUNT_TOO_LOW/);
+  assert.throws(() => entryGate(snapshot({ progressBps: null, agentCount: 99, allowPaidHeatFallback: true }), cfg(), NOW), /PAID_AGENT_COUNT_TOO_LOW/);
+  assert.doesNotThrow(() => entryGate(snapshot({ progressBps: 6000, agentCount: 100 }), cfg(), NOW));
+});
 test('actual zero progress does not become unknown-progress heat fallback', () => {
   assert.throws(() => entryGate(snapshot({ progressBps: 0, agentCount: 10000 }), cfg(), NOW), /WAIT_FOR_PROGRESS/);
   assert.throws(() => entryGate(snapshot({ progressBps: null }), cfg(), NOW), /WAIT_FOR_PROGRESS/);

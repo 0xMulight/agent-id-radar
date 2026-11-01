@@ -15,6 +15,7 @@ export function entryGate(ctx, c, now = Date.now()) {
   if (paid && ctx.assetType !== 'ERC20') reject('PAID_NFT_NOTIFY_ONLY');
   if (!ctx.mintSelector || !ALLOWED_MINT_SELECTORS.has(ctx.mintSelector)) reject('UNREVIEWED_CALL');
   if (paid && (!ctx.refund?.reviewed || !ctx.refund?.covered || !ctx.refund?.termsCurrent || ctx.refund.deadline <= now)) reject('REFUND_UNVERIFIED');
+  if (paid && (!Number.isSafeInteger(ctx.agentCount) || ctx.agentCount < c.entry.minAgents)) reject('PAID_AGENT_COUNT_TOO_LOW');
   if (paid && ctx.heatTier < c.entry.minimumPaidHeat) reject('HEAT_TOO_LOW');
   if (ctx.progressBps === null) {
     const crowd = ctx.agentCount >= c.entry.minAgents;

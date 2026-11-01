@@ -3,7 +3,7 @@ import { selector, addrWord, word, uint, APPROVE, ALLOWANCE, encodeSwap } from '
 import { units, WAD, bnbToUsd, usdToBnb, bp, max } from './money.mjs';
 import { entryGate } from './guard.mjs';
 export class Planner {
-  constructor(rpc, cfg, clock = Date.now) { this.rpc = rpc; this.cfg = cfg; this.clock = clock; }
+  constructor(rpc, cfg, clock = Date.now, market = null) { this.rpc = rpc; this.cfg = cfg; this.clock = clock; this.market = market; }
   async snapshot(template, wallet, candidate = {}) {
     const now = this.clock(), head = await this.rpc.head(), block = '0x' + head.toString(16);
     const [identity, assetIdentity, balance, price] = await Promise.all([
@@ -47,6 +47,11 @@ export class Planner {
       // confirm the launch is not on V3/Infinity/another DEX before auto-entry.
       if (!poolOpen && template.poolReview?.noOtherDex !== true) poolOpen = null;
     } catch {}
+    const market = this.market ? await this.market.pools(template.asset) : { status: 'disabled', pools: [] };
+    if (market.pools.length) poolOpen = true;
+    // A missing listing is not proof of no pool. Preserve the reviewed on-chain
+    // rule; if an enabled source is unavailable, do not silently pass entry.
+    else if (poolOpen !== true && this.cfg.market.enabled && market.status !== 'ok') poolOpen = null;
     return {
       wallet: wallet.address, chainId: 56, target: template.contract, asset: template.asset, assetType: template.assetType,
       identity: identity.fingerprint, expectedIdentity: template.identity, assetIdentity: assetIdentity.fingerprint, expectedAssetIdentity: template.assetIdentity,
@@ -55,7 +60,7 @@ export class Planner {
       balanceWei: String(balance), bnbPrice: String(price), priceAgeMs: this.clock() - now,
       progressBps, agentCount: candidate.agentCount || 0, burstCount: candidate.burstCount || 0,
       heatTier: candidate.heatTier || 0, allowPaidHeatFallback: template.allowPaidHeatFallback === true,
-      deployer: candidate.deployer, malicious: false, poolOpen, refund, blockNumber: head
+      deployer: candidate.deployer, malicious: false, poolOpen, marketStatus: market.status, refund, blockNumber: head
     };
   }
   async gas(plan) {

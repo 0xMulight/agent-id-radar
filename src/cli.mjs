@@ -13,7 +13,7 @@ const configPath = resolve(option('--config', join(ROOT, 'config.json')));
 const statePath = resolve(option('--state', join(ROOT, 'data', 'guard-state.json')));
 try {
   if (command === 'help' || args.includes('--help')) {
-    console.log('Agent ID Radar 0.1.0-beta.1\n\ninit                 创建默认观察配置\ncheck                校验配置\ninspect <contract>   只读查看合约代码身份\nwatch                运行扫描、预演和仓位观察\nwatch --execute      仅在配置 mode=live 时允许真实广播\nstatus               查看本地状态（不显示凭证）\ndemo                 运行内置离线场景\nreplay <file>        运行指定合成场景\n\n可选 --config <path> --state <path>\n未设置模板的项目只观察。此版本没有远程聊天交易指令或自动更新。');
+    console.log('Agent ID Radar 0.1.0-beta.2\n\ninit                 创建默认观察配置\ncheck                校验配置\ninspect <contract>   只读查看合约代码身份\nwatch                运行扫描、预演和仓位观察\nwatch --execute      仅在配置 mode=live 时允许真实广播\nstatus               查看本地状态（不显示凭证）\nrequest-sale <id> --all  写入包含底仓的全卖请求\ndemo                 运行内置离线场景\nreplay <file>        运行指定合成场景\n\n可选 --config <path> --state <path>\n未设置模板的项目只观察。此版本没有远程聊天交易指令或自动更新。');
   } else if (command === 'init') {
     if (existsSync(configPath)) throw new Error('Config already exists; refusing to overwrite');
     writeFileSync(configPath, JSON.stringify(DEFAULTS, null, 2) + '\n', { mode: 0o600, flag: 'wx' });

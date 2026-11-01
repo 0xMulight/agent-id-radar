@@ -6,7 +6,8 @@ export const DEFAULTS = {
   limits: { perProjectUsd: '12', globalDailyBnb: '0.05', walletDailyBnb: '0.05', gasReserveBnb: '0.006', freeGasDailyBnb: '0.005', globalGasDailyBnb: '0.01', maxGasPerTransactionBnb: '0.001', maxFreeTransactions: 1000, maxPaidInWindow: 3, paidWindowSeconds: 180, maxFailures: 3 },
   entry: { progressBps: 6000, minAgents: 100, freeBurstMin: 25, burstSeconds: 180, minimumPaidHeat: 1 },
   sales: { backX: 2, earlyDropBps: 2500, earlyCoverBps: 10200, paidCrashBps: 4000, fastPaidCrashBps: 3500, fastSeconds: 1800, freeCrashBps: 5000, freeCoreBps: 3000, paidCoreBps: 5000, steps: [[10, 3000], [20, 5000]], slippageBps: 300, maxPriceImpactBps: 1000, maxRepriceBps: 500, maxPeakJumpBps: 10000, quoteMaxAgeSeconds: 15, confirmMaxGapSeconds: 30, dustUsd: '0.3' },
-  scan: { pollMs: 3000, hotMs: 15000, normalMs: 60000, confirmations: 2, maxBlocksPerTick: 8, receiptConcurrency: 4, rpcTimeoutMs: 8000, maxCandidates: 1000 },
+  scan: { pollMs: 3000, hotMs: 15000, normalMs: 60000, coldMs: 300000, activeHours: 24, maxEntryChecksPerTick: 8, entryConcurrency: 2, confirmations: 2, maxBlocksPerTick: 8, receiptConcurrency: 4, rpcTimeoutMs: 8000, maxCandidates: 1000 },
+  market: { enabled: false, cacheSeconds: 60, timeoutMs: 5000, maxRequestsPerMinute: 30 },
   telegram: { chatId: '', tokenEnv: 'RADAR_TG_BOT_TOKEN' },
   blockedContracts: [], blockedDeployers: [], temporaryDailyLimit: null
 };
@@ -35,6 +36,10 @@ export function config(input = {}) {
   for (const [k, v] of Object.entries(c.limits)) if (typeof v === 'number' && (!Number.isSafeInteger(v) || v < 1)) throw new Error('Invalid limit: ' + k);
   for (const [k, v] of Object.entries(c.entry)) if (!Number.isSafeInteger(v) || v < 1 || (k === 'progressBps' && v > 10000)) throw new Error('Invalid entry parameter: ' + k);
   for (const [k, v] of Object.entries(c.scan)) if (!Number.isSafeInteger(v) || v < 1 || v > 1000000) throw new Error('Invalid scan parameter: ' + k);
+  if (c.scan.entryConcurrency > 4 || c.scan.maxEntryChecksPerTick > 32 || c.scan.hotMs > c.scan.normalMs || c.scan.normalMs > c.scan.coldMs) throw new Error('Invalid entry scheduling limits');
+  if (typeof c.market.enabled !== 'boolean') throw new Error('market.enabled must be a boolean');
+  for (const k of ['cacheSeconds', 'timeoutMs', 'maxRequestsPerMinute']) if (!Number.isSafeInteger(c.market[k]) || c.market[k] < 1) throw new Error('Invalid market parameter: ' + k);
+  if (c.market.cacheSeconds > 300 || c.market.timeoutMs > 10000 || c.market.maxRequestsPerMinute > 60) throw new Error('Market observation limits exceeded');
   for (const key of ['paidCrashBps', 'fastPaidCrashBps', 'freeCrashBps', 'freeCoreBps', 'paidCoreBps', 'slippageBps', 'maxPriceImpactBps', 'earlyDropBps']) if (!Number.isInteger(c.sales[key]) || c.sales[key] <= 0 || c.sales[key] >= 10000) throw new Error('Invalid sale BPS: ' + key);
   if (c.sales.slippageBps > 1000 || c.sales.maxPriceImpactBps > 2000) throw new Error('Beta slippage/impact ceiling exceeded');
   if (!Number.isSafeInteger(c.sales.maxRepriceBps) || c.sales.maxRepriceBps < 0 || c.sales.maxRepriceBps > 500 || !Number.isSafeInteger(c.sales.maxPeakJumpBps) || c.sales.maxPeakJumpBps < 1) throw new Error('Invalid repricing/peak limit');

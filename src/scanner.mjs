@@ -54,7 +54,7 @@ export class Scanner {
           const x = s.scan.candidates[d.target] ||= { contract: d.target, firstSeen: at, observations: [], agents: [], notified: false };
           x.agentGated ||= d.gated; x.deployer ||= d.update.deployedBy; x.identity = d.identity || x.identity; x.lastSeen = at;
           const add = new Set(x.agents), seen = new Set(x.observations.map(t => t.hash));
-          for (const t of d.update.txs) if (!seen.has(t.hash)) { x.observations.push(t); seen.add(t.hash); }
+          for (const t of d.update.txs) if (!seen.has(t.hash)) { x.observations.push({ ...t, isAgent: this.agentCache.get(t.wallet + ':' + tag) === true }); seen.add(t.hash); }
           // Only verified Agent-ID senders contribute to the Agent count.
           for (const a of d.update.addresses) if (this.agentCache.get(a + ':' + tag) === true) add.add(a);
           x.agents = [...add].slice(-5000); x.observations = x.observations.filter(t => at - t.at < 86400000).slice(-5000);
@@ -71,7 +71,11 @@ export class Scanner {
     return { head, scanned: state.scan.lastBlock, lag: safeHead - (state.scan.lastBlock || safeHead), candidates: Object.values(state.scan.candidates) };
   }
   context(candidate) {
-    const now = this.clock(), burst = new Set(candidate.observations.filter(o => now - o.at < this.cfg.entry.burstSeconds * 1000).map(o => o.wallet));
-    return { ...candidate, agentCount: candidate.agents.length, burstCount: burst.size, heatTier: burst.size >= this.cfg.entry.freeBurstMin ? 1 : 0 };
+    const now = this.clock();
+    // Old observations without an at-transaction Agent proof are deliberately
+    // excluded; a later ID acquisition must not turn old spam into valid heat.
+    const recent = (candidate.observations || []).filter(o => o.isAgent === true && o.at <= now && now - o.at < 86400000);
+    const agents = new Set(recent.map(o => o.wallet)), burst = new Set(recent.filter(o => now - o.at < this.cfg.entry.burstSeconds * 1000).map(o => o.wallet));
+    return { ...candidate, agentCount: agents.size, burstCount: burst.size, heatTier: burst.size >= this.cfg.entry.freeBurstMin ? 1 : 0 };
   }
 }

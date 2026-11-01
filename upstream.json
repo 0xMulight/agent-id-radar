@@ -8,5 +8,12 @@
     "Keccak-256 helper",
     "known mint selectors and BSC routing constants"
   ],
-  "note": "Legacy watch.mjs, installer, update and execution paths are not included or runnable. Guarded engine is independently maintained."
+  "note": "Legacy watch.mjs, installer, update and execution paths are not included or runnable. Guarded engine is independently maintained.",
+  "reviewedUpdate": {
+    "sourceVersion": "2.7.6",
+    "commit": "8f9c488f064e8cdbc9e46df4905bfb25a6a7af00",
+    "reviewDate": "2026-11-01",
+    "adoptedIdeas": ["recent and hot entry scheduling", "verified Agent-ID sender heat", "observation-only additional DEX pool discovery"],
+    "report": "docs/upstream-review-2.7.6.md"
+  }
 }
